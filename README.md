@@ -43,7 +43,7 @@ desenvolvido em Java com Swing e FlatLaf.
 ## ▶ Como executar
 
 ```bash
-git clone LINK
+git clone https://github.com/JeffhdSilva/Estacionamento_Java.git
 ```
 
 Abra no NetBeans e execute o projeto.
