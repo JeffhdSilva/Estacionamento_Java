@@ -1,5 +1,13 @@
 # 🚗 Sistema de Estacionamento Java
 
+![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+
+![Swing](https://img.shields.io/badge/Swing-GUI-blue?style=for-the-badge)
+
+![Maven](https://img.shields.io/badge/Maven-Build-red?style=for-the-badge)
+
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
 Sistema de gestão para estacionamento e estética automotiva
 desenvolvido em Java com Swing e FlatLaf.
 
@@ -35,7 +43,7 @@ desenvolvido em Java com Swing e FlatLaf.
 ## ▶ Como executar
 
 ```bash
-git clone LINK
+git clone https://github.com/JeffhdSilva/Estacionamento_Java.git
 ```
 
 Abra no NetBeans e execute o projeto.
