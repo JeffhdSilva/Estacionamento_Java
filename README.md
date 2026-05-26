@@ -15,7 +15,7 @@ desenvolvido em Java com Swing e FlatLaf.
 
 ## 📸 Interface
 
-<img src="prints/tela-principal.png" width="700">
+<img src="prints/tela_principal.png" width="700">
 
 ---
 
