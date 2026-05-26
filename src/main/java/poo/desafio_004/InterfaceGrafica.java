@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
+import javax.swing.UIManager;
 
 /**
  *
@@ -14,6 +16,7 @@ public class InterfaceGrafica extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(InterfaceGrafica.class.getName());
 
+    private LocalTime hora = LocalTime.now();
     private LocalTime entrada = LocalTime.now();
     private LocalTime saida = LocalTime.now();
     private LocalTime horarioLimite = LocalTime.of(18, 0);
@@ -38,6 +41,7 @@ public class InterfaceGrafica extends javax.swing.JFrame {
         txtModelo.putClientProperty("JComponent.roundRect", true);
         txtEntrada.putClientProperty("JComponent.roundRect", true);
         txtSaida.putClientProperty("JComponent.roundRect", true);
+        txtHora.putClientProperty("JComponent.roundRect", true);
 
         //Placeholders (textto de dica dentro do campo)
         txtPlaca.putClientProperty("JTextField.placeholderText", "Digite a placa do Veiculo...");
@@ -47,17 +51,21 @@ public class InterfaceGrafica extends javax.swing.JFrame {
         txtPlaca.putClientProperty("JTextField.showClearButton", true);
         txtModelo.putClientProperty("JTextField.showClearButton", true);
 
-        //Botao com estilo destacado (Accent)
-        btnEntrada.putClientProperty("JButon.buttonType", "roundRect");
-        btnSaida.putClientProperty("JButon.buttonType", "roundRect");
-        btnTicket.putClientProperty("JButon.buttonType", "roundRect");
+    }
+
+    public void Limpar() {
+        txtModelo.setText("");
+        txtPlaca.setText("");
+        txtEntrada.setText("");
+        txtSaida.setText("");
+        txaTicket.setText("");
     }
 
     public void entradaPermitida() {
         if (entrada.isAfter(horarioLimite)) {
-            JOptionPane.showMessageDialog(this, "Horário não permitido. Volte amanhã");
+            JOptionPane.showMessageDialog(this, "Estabelecimento Fechado! Volte amanhã");
         } else if (entrada.isBefore(horarioAntes)) {
-            JOptionPane.showMessageDialog(this, "Horário não permitido. Aguarde o Estacionamento abrir");
+            JOptionPane.showMessageDialog(this, "Estabelecimento Fechado! Aguarde o Estacionamento abrir");
         } else {
             txtEntrada.setText(hf.format(entrada));
         }
@@ -65,26 +73,21 @@ public class InterfaceGrafica extends javax.swing.JFrame {
 
     public void saidaPermitida() {
         if (saida.isAfter(horarioLimite)) {
-            JOptionPane.showMessageDialog(this, "Horário não permitido. Volte amanhã");
+            JOptionPane.showMessageDialog(this, "Estabelecimento Fechado! Volte amanhã");
         } else if (saida.isBefore(horarioAntes)) {
-            JOptionPane.showMessageDialog(this, "Horário não permitido. Aguarde o Estacionamento abrir");
+            JOptionPane.showMessageDialog(this, "Estabelecimento Fechado! Aguarde o Estacionamento abrir");
         } else {
             txtSaida.setText(hf.format(saida));
         }
     }
-    
-    public void botaoTicket(){
+
+    public void botaoTicket() {
         try {
             String modelo = txtModelo.getText();
             String placa = txtPlaca.getText();
 
             if (modelo.isEmpty() || placa.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Prencha o campo de Modelo e de Placa.");
-                return;
-            }
-            
-            if (txtSaida.isEnabled() || txtEntrada.isEnabled()){
-                JOptionPane.showMessageDialog(this, "Preencha os horários para gerar o Ticket");
                 return;
             }
 
@@ -140,9 +143,16 @@ public class InterfaceGrafica extends javax.swing.JFrame {
         txtEntrada = new javax.swing.JTextField();
         txtSaida = new javax.swing.JTextField();
         btnTicket = new javax.swing.JButton();
+        btnLimpar = new javax.swing.JButton();
+        txtHora = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jLabel1.setIcon(new javax.swing.ImageIcon("C:\\Users\\jeffe\\Downloads\\Horário de Funcionamento (1).png")); // NOI18N
 
@@ -159,12 +169,13 @@ public class InterfaceGrafica extends javax.swing.JFrame {
         rbLavagemS.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         rbLavagemS.setForeground(new java.awt.Color(160, 148, 116));
         rbLavagemS.setSelected(true);
-        rbLavagemS.setText("LAVAGEM SIMPLES: VALOR FIXO (R$ 40,00/hora)");
+        rbLavagemS.setText("LAVAGEM SIMPLES: VALOR FIXO (R$ 40,00)");
+        rbLavagemS.setActionCommand("LAVAGEM SIMPLES: VALOR FIXO (R$ 40,00)");
 
         buttonGroup1.add(rbLavagemC);
         rbLavagemC.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         rbLavagemC.setForeground(new java.awt.Color(160, 148, 116));
-        rbLavagemC.setText("LAVAGEM COMPLETA: VALOR FIXO (R$ 70,00/hora)");
+        rbLavagemC.setText("LAVAGEM COMPLETA: VALOR FIXO (R$ 70,00)");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(153, 88, 42));
@@ -172,6 +183,11 @@ public class InterfaceGrafica extends javax.swing.JFrame {
 
         btnEntrada.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnEntrada.setText("ENTRADA");
+        btnEntrada.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnEntradaMouseClicked(evt);
+            }
+        });
         btnEntrada.addActionListener(this::btnEntradaActionPerformed);
 
         btnSaida.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -191,7 +207,24 @@ public class InterfaceGrafica extends javax.swing.JFrame {
 
         btnTicket.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnTicket.setText("GERAR TICKET");
+        btnTicket.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnTicketMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnTicketMouseExited(evt);
+            }
+        });
         btnTicket.addActionListener(this::btnTicketActionPerformed);
+
+        btnLimpar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnLimpar.setText("LIMPAR");
+        btnLimpar.setPreferredSize(new java.awt.Dimension(74, 27));
+        btnLimpar.addActionListener(this::btnLimparActionPerformed);
+
+        txtHora.setEditable(false);
+        txtHora.setEnabled(false);
+        txtHora.addActionListener(this::txtHoraActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -219,19 +252,28 @@ public class InterfaceGrafica extends javax.swing.JFrame {
                                     .addComponent(txtSaida, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnTicket))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(txtPlaca, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                                 .addComponent(txtModelo, javax.swing.GroupLayout.Alignment.LEADING))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(82, 82, 82)
+                        .addContainerGap()
+                        .addComponent(txtHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)))
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(txtHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(txtModelo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -245,20 +287,24 @@ public class InterfaceGrafica extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(rbEstacionamento)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEntrada)
-                    .addComponent(btnSaida))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtSaida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnTicket))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnEntrada)
+                            .addComponent(btnSaida))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtSaida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnTicket))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEntradaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntradaActionPerformed
@@ -281,6 +327,43 @@ public class InterfaceGrafica extends javax.swing.JFrame {
         botaoTicket();
     }//GEN-LAST:event_btnTicketActionPerformed
 
+    private void btnEntradaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnEntradaMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEntradaMouseClicked
+
+    private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
+        // TODO add your handling code here:
+        Limpar();
+    }//GEN-LAST:event_btnLimparActionPerformed
+
+    private void btnTicketMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnTicketMouseEntered
+        // TODO add your handling code here:
+        if (txtEntrada.getText().isBlank() || txtSaida.getText().isBlank()) {
+            btnTicket.setEnabled(false);
+        }
+    }//GEN-LAST:event_btnTicketMouseEntered
+
+    private void btnTicketMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnTicketMouseExited
+        // TODO add your handling code here:
+        btnTicket.setEnabled(true);
+    }//GEN-LAST:event_btnTicketMouseExited
+
+    private void txtHoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtHoraActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtHoraActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        Timer timer = new Timer(1000, e -> {
+
+            LocalTime hora = LocalTime.now();
+            DateTimeFormatter hms = DateTimeFormatter.ofPattern("HH:mm:ss");
+            txtHora.setText(hora.format(hms));
+
+        });
+        timer.start();
+    }//GEN-LAST:event_formWindowOpened
+
     /**
      * @param args the command line arguments
      */
@@ -302,17 +385,7 @@ public class InterfaceGrafica extends javax.swing.JFrame {
         }
         //</editor-fold>
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        try {
+            UIManager.put("Button.arc", 800);
             com.formdev.flatlaf.intellijthemes.FlatMaterialDesignDarkIJTheme.setup();
         } catch (Exception e) {
             System.out.println("Erro ao carregar o Look and Feel.");
@@ -324,6 +397,7 @@ public class InterfaceGrafica extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEntrada;
+    private javax.swing.JButton btnLimpar;
     private javax.swing.JButton btnSaida;
     private javax.swing.JButton btnTicket;
     private javax.swing.ButtonGroup buttonGroup1;
@@ -335,6 +409,7 @@ public class InterfaceGrafica extends javax.swing.JFrame {
     private javax.swing.JRadioButton rbLavagemS;
     private javax.swing.JTextArea txaTicket;
     private javax.swing.JTextField txtEntrada;
+    private javax.swing.JTextField txtHora;
     private javax.swing.JTextField txtModelo;
     private javax.swing.JTextField txtPlaca;
     private javax.swing.JTextField txtSaida;
