@@ -26,6 +26,11 @@ public class Estetica extends Servico {
         return 0;
     }
 
+    @Override
+    public String toString() {
+        return tipoLavagem;
+    }
+
     public String getTipoLavagem() {
         return tipoLavagem;
     }

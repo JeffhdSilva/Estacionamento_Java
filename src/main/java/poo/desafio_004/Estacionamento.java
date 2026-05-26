@@ -31,6 +31,11 @@ public class Estacionamento extends Servico {
 
     }
 
+    @Override
+    public String toString() {
+        return "Estacionamento";
+    }
+
     public LocalTime getHoraEntrada() {
         return horaEntrada;
     }

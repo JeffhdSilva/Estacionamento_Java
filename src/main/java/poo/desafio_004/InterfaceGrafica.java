@@ -17,8 +17,8 @@ public class InterfaceGrafica extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(InterfaceGrafica.class.getName());
 
     private LocalTime hora = LocalTime.now();
-    private LocalTime entrada = LocalTime.now();
-    private LocalTime saida = LocalTime.now();
+    private LocalTime entrada;
+    private LocalTime saida;
     private LocalTime horarioLimite = LocalTime.of(18, 0);
     private LocalTime horarioAntes = LocalTime.of(7, 0);
 
@@ -82,41 +82,39 @@ public class InterfaceGrafica extends javax.swing.JFrame {
     }
 
     public void botaoTicket() {
-        try {
-            String modelo = txtModelo.getText();
-            String placa = txtPlaca.getText();
 
-            if (modelo.isEmpty() || placa.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Prencha o campo de Modelo e de Placa.");
-                return;
-            }
+        String modelo = txtModelo.getText();
+        String placa = txtPlaca.getText();
 
-            Servico servico = null;
-
-            if (rbEstacionamento.isSelected()) {
-                servico = new Estacionamento(entrada, saida, modelo, placa);
-            } else if (rbLavagemS.isSelected()) {
-                servico = new Estetica(modelo, placa, "Simples");
-            } else if (rbLavagemC.isSelected()) {
-                servico = new Estetica(modelo, placa, "Completa");
-            }
-
-            double valorPagar = servico.calcularTotal();
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("========== Garbage Collector Park ==========\n\n");
-            sb.append("Data: ").append(data).append("\n");
-            sb.append("Modelo: ").append(modelo).append("\n");
-            sb.append("Placa: ").append(placa).append("\n");
-            sb.append("Horário de entrada: ").append(hf.format(entrada)).append("\n");
-            sb.append("Horário de saída: ").append(hf.format(saida)).append("\n\n");
-            sb.append("VALOR TOTAL A PAGAR: R$").append(df.format(valorPagar)).append("\n");
-
-            txaTicket.setText(sb.toString());
-
-        } catch (java.lang.NullPointerException e) {
-            JOptionPane.showMessageDialog(null, "ERRO: Você precisa prencher as opções.");
+        if (modelo.isEmpty() || placa.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Prencha o campo de Modelo e de Placa.");
+            return;
         }
+
+        Servico servico = null;
+
+        if (rbEstacionamento.isSelected()) {
+            servico = new Estacionamento(entrada, saida, placa, modelo);
+        } else if (rbLavagemS.isSelected()) {
+            servico = new Estetica(placa, modelo, "Simples");
+        } else if (rbLavagemC.isSelected()) {
+            servico = new Estetica(placa, modelo, "Completa");
+        }
+
+        double valorPagar = servico.calcularTotal();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("========== Garbage Collector Park ==========\n\n");
+        sb.append("Data: ").append(data).append("\n");
+        sb.append("Serviço: ").append(String.valueOf(servico));
+        sb.append("Modelo: ").append(modelo).append("\n");
+        sb.append("Placa: ").append(placa).append("\n");
+        sb.append("Horário de entrada: ").append(hf.format(entrada)).append("\n");
+        sb.append("Horário de saída: ").append(hf.format(saida)).append("\n\n");
+        sb.append("VALOR TOTAL A PAGAR: R$").append(df.format(valorPagar)).append("\n");
+
+        txaTicket.setText(sb.toString());
+
     }
 
     /**
@@ -129,7 +127,7 @@ public class InterfaceGrafica extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jLabel1 = new javax.swing.JLabel();
+        Logo = new javax.swing.JLabel();
         txtModelo = new javax.swing.JTextField();
         txtPlaca = new javax.swing.JTextField();
         rbEstacionamento = new javax.swing.JRadioButton();
@@ -154,7 +152,7 @@ public class InterfaceGrafica extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setIcon(new javax.swing.ImageIcon("C:\\Users\\jeffe\\Downloads\\Horário de Funcionamento (1).png")); // NOI18N
+        Logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagens/logo.png"))); // NOI18N
 
         txtModelo.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
@@ -170,7 +168,6 @@ public class InterfaceGrafica extends javax.swing.JFrame {
         rbLavagemS.setForeground(new java.awt.Color(160, 148, 116));
         rbLavagemS.setSelected(true);
         rbLavagemS.setText("LAVAGEM SIMPLES: VALOR FIXO (R$ 40,00)");
-        rbLavagemS.setActionCommand("LAVAGEM SIMPLES: VALOR FIXO (R$ 40,00)");
 
         buttonGroup1.add(rbLavagemC);
         rbLavagemC.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -263,14 +260,14 @@ public class InterfaceGrafica extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(txtHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel1)))
+                        .addComponent(Logo)))
                 .addContainerGap(54, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Logo, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(txtHora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -396,12 +393,12 @@ public class InterfaceGrafica extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Logo;
     private javax.swing.JButton btnEntrada;
     private javax.swing.JButton btnLimpar;
     private javax.swing.JButton btnSaida;
     private javax.swing.JButton btnTicket;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JRadioButton rbEstacionamento;
